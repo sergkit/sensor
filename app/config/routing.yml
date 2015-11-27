@@ -1,0 +1,20 @@
+home:
+    path:   /
+    defaults: { _controller: AppBundle:System:report }
+
+about:
+    path:   /about
+    defaults: { _controller: AppBundle:System:about }
+
+config:
+    path:   /config
+    defaults: { _controller: AppBundle:System:config }
+
+report:
+    path:   /report
+    defaults: { _controller: AppBundle:System:report }
+
+add_record:
+    path:   /add_record
+    defaults: { _controller: AppBundle:System:add_record }
+

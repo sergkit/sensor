@@ -1,0 +1,16 @@
+/app/bootstrap.php.cache
+/app/cache/*
+!app/cache/.gitkeep
+/app/config/parameters.yml
+/app/logs/*
+!app/logs/.gitkeep
+/app/phpunit.xml
+/bin/
+/composer.phar
+/vendor/
+/web/bundles/
+/Apache-2.2_vhost.conf
+/app/console
+/nbproject
+/web/config.php
+/web/source
