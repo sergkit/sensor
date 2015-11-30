@@ -1,10 +1,18 @@
 <?php
+
 //$ php app/console doctrine:generate:entities AppBundle/Entity/Product генерация геттеров и сеттеров
 //php app/console doctrine:schema:update --force генерация таблиц
 //
 // php app/console doctrine:mapping:import Имя_бандла формат_конфига   генерация модели из базы
 //Таким образом мы создадим конфиг для построения модели. Формат может быть разным, например, yml, xml и т.д. После этого создадим ORM:
 //php app/console doctrine:generate:entities Имя_бандла
+//https://www.skipper18.com/en/download  визуальное проектирование базы
+//http://www.symfony2cheatsheet.com/
+
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\ExecutionContext;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 
 /*
@@ -23,12 +31,13 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ *  не работает Assert\Callback(methods={"isPasswordLegal"})
  * @ORM\Entity
  * @ORM\Table(name="thtable")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ThtableRepository")
  */
-class Thtable
-{
+class Thtable {
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -50,38 +59,46 @@ class Thtable
      * @ORM\Column(type="decimal", scale=2)
      */
     protected $co2;
+
     /**
      * @ORM\Column(type="decimal", scale=2)
+     * @Assert\NotBlank()
      */
     protected $t;
+
     /**
      * @ORM\Column(type="decimal", scale=2)
+     * @Assert\NotBlank()
      */
     protected $h;
+
     /**
      * @ORM\Column(type="decimal", scale=2)
      */
     protected $VOC;
+
     /**
      * @ORM\Column(type="decimal", scale=2)
      */
     protected $VOCR;
+
     /**
      * @ORM\Column(type="decimal", scale=2)
      */
     protected $VOCold;
+    protected $CheckFields;
 
     public function __construct() {
-        $this->date=new \DateTime("now");
-        $this->room=1;
+        $this->date = new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
+        $this->room = 1;
     }
+
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -92,8 +109,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setDate(\DateTime $date)
-    {
+    public function setDate(\DateTime $date) {
         $this->date = $date;
 
         return $this;
@@ -104,8 +120,7 @@ class Thtable
      *
      * @return \DateTime
      */
-    public function getDate()
-    {
+    public function getDate() {
         return $this->date;
     }
 
@@ -116,8 +131,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setRoom($room)
-    {
+    public function setRoom($room) {
         $this->room = $room;
 
         return $this;
@@ -128,8 +142,7 @@ class Thtable
      *
      * @return integer
      */
-    public function getRoom()
-    {
+    public function getRoom() {
         return $this->room;
     }
 
@@ -140,8 +153,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setCo2($co2)
-    {
+    public function setCo2($co2) {
         $this->co2 = $co2;
 
         return $this;
@@ -152,8 +164,7 @@ class Thtable
      *
      * @return string
      */
-    public function getCo2()
-    {
+    public function getCo2() {
         return $this->co2;
     }
 
@@ -164,8 +175,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setT($t)
-    {
+    public function setT($t) {
         $this->t = $t;
 
         return $this;
@@ -176,8 +186,7 @@ class Thtable
      *
      * @return string
      */
-    public function getT()
-    {
+    public function getT() {
         return $this->t;
     }
 
@@ -188,8 +197,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setH($h)
-    {
+    public function setH($h) {
         $this->h = $h;
 
         return $this;
@@ -200,8 +208,7 @@ class Thtable
      *
      * @return string
      */
-    public function getH()
-    {
+    public function getH() {
         return $this->h;
     }
 
@@ -212,8 +219,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setVOC($vOC)
-    {
+    public function setVOC($vOC) {
         $this->VOC = $vOC;
 
         return $this;
@@ -224,8 +230,7 @@ class Thtable
      *
      * @return string
      */
-    public function getVOC()
-    {
+    public function getVOC() {
         return $this->VOC;
     }
 
@@ -236,8 +241,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setVOCR($vOCR)
-    {
+    public function setVOCR($vOCR) {
         $this->VOCR = $vOCR;
 
         return $this;
@@ -248,8 +252,7 @@ class Thtable
      *
      * @return string
      */
-    public function getVOCR()
-    {
+    public function getVOCR() {
         return $this->VOCR;
     }
 
@@ -260,8 +263,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setVOCold($vOCold)
-    {
+    public function setVOCold($vOCold) {
         $this->VOCold = $vOCold;
 
         return $this;
@@ -272,8 +274,42 @@ class Thtable
      *
      * @return string
      */
-    public function getVOCold()
-    {
+    public function getVOCold() {
         return $this->VOCold;
     }
+
+    public function setCheckFields($CheckFields) {
+        $this->CheckFields = $CheckFields;
+
+        return $this;
+    }
+
+    public function getCheckFields() {
+        return $this->CheckFields;
+    }
+    /**
+     * @Assert\True(message = "The password cannot match your first name")
+     */
+    public function isPasswordLegal()
+    {
+        $fakeNames = array();
+        return false;
+        // check if the name is actually a fake name
+        if (in_array($this->getFirstName(), $fakeNames)) {
+            $context->addViolationAtSubPath('VOC', 'This name sounds totally fake!', array(), null);
+        }
+    }
+
+    public function validate(ExecutionContextInterface $context) {
+        // somehow you have an array of "fake names"
+        $fakeNames = [];
+        // check if the name is actually a fake name
+        if (true) {
+            // If you're using the new 2.5 validation API (you probably are!)
+            $context->buildViolation('This name sounds totally fake!')
+                    ->atPath('VOC')
+                    ->addViolation();
+        }
+    }
+
 }

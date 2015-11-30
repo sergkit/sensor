@@ -28,7 +28,10 @@ class SystemController extends Controller {
     public function add_recordAction(Request $request) {
         $th = new Thtable();
         $sensor_input_form = $this->createForm(new AddData(), $th);
+        //dump($request);
+        //die();
         $sensor_input_form->handleRequest($request);
+
         if ($sensor_input_form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($th);
@@ -38,7 +41,7 @@ class SystemController extends Controller {
         return $this->render('system/form.html.twig', ['menu' => '', 'form' => $sensor_input_form->createView()]);
     }
 
-    public function send_form(){
+    public function send_formAction(){
         function r(){
             return rand(0, 1000);
         }
@@ -50,6 +53,18 @@ class SystemController extends Controller {
             'add_data[VOCR]'=>  r(),
             'add_data[VOCold]'=>  r(),
         ];
+       return new Response($this->send_post('http://gitsen/add_record',$arr ));
+
+    }
+    private function send_post($url, $arr){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $arr);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        return "ок";
     }
 
 }

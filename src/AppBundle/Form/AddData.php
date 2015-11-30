@@ -15,6 +15,7 @@ namespace AppBundle\Form;
  */
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class AddData extends AbstractType {
 
@@ -33,10 +34,11 @@ class AddData extends AbstractType {
         return 'add_data';
     }
 
-    public function getDefaultOptions(array $options) {
-        return array(
-            'data_class' => 'AppBundle\Entity\Thtable',
-        );
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'csrf_protection' => false,
+        ));
     }
 
 }

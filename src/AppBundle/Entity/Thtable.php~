@@ -1,6 +1,11 @@
 <?php
 //$ php app/console doctrine:generate:entities AppBundle/Entity/Product генерация геттеров и сеттеров
 //php app/console doctrine:schema:update --force генерация таблиц
+//
+// php app/console doctrine:mapping:import Имя_бандла формат_конфига   генерация модели из базы
+//Таким образом мы создадим конфиг для построения модели. Формат может быть разным, например, yml, xml и т.д. После этого создадим ORM:
+//php app/console doctrine:generate:entities Имя_бандла
+
 
 /*
  * Сервер домашней автоматизации.
@@ -66,7 +71,12 @@ class Thtable
      */
     protected $VOCold;
 
+    protected $CheckFields;
 
+    public function __construct() {
+        $this->date=new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
+        $this->room=1;
+    }
     /**
      * Get id
      *
@@ -84,7 +94,7 @@ class Thtable
      *
      * @return Thtable
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date)
     {
         $this->date = $date;
 
