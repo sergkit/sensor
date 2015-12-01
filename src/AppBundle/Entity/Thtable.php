@@ -1,5 +1,5 @@
 <?php
-
+namespace AppBundle\Entity;
 //$ php app/console doctrine:generate:entities AppBundle/Entity/Product генерация геттеров и сеттеров
 //php app/console doctrine:schema:update --force генерация таблиц
 //
@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  */
 
-namespace AppBundle\Entity;
+
 
 /**
  * Description of Product
