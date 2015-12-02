@@ -1,0 +1,52 @@
+AppBundle\Entity\Thtable:
+    type: entity
+    table: thtable
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        date:
+            type: datetime
+            nullable: false
+        room:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        co2:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+        t:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+        h:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+        voc:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+        vocr:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+        vocold:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+    lifecycleCallbacks: {  }

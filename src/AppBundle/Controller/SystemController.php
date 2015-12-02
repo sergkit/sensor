@@ -53,6 +53,7 @@ class SystemController extends Controller {
             'add_data[VOCR]'=>  r(),
             'add_data[VOCold]'=>  r(),
         ];
+        $arr['add_data[CheckFields]']=$arr['add_data[co2]']+$arr['add_data[t]']+$arr['add_data[h]']+$arr['add_data[VOC]'];
        return new Response($this->send_post('http://gitsen/add_record',$arr ));
 
     }

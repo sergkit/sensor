@@ -8,10 +8,12 @@ namespace AppBundle\Entity;
 //php app/console doctrine:generate:entities Имя_бандла
 //https://www.skipper18.com/en/download  визуальное проектирование базы
 //http://www.symfony2cheatsheet.com/
-
+namespace AppBundle\Entity;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\ExecutionContext;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 
 
@@ -31,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *  не работает Assert\Callback(methods={"isPasswordLegal"})
+ * @Assert\Callback(methods={"isSumOk"})
  * @ORM\Entity
  * @ORM\Table(name="thtable")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ThtableRepository")
@@ -62,13 +64,11 @@ class Thtable {
 
     /**
      * @ORM\Column(type="decimal", scale=2)
-     * @Assert\NotBlank()
      */
     protected $t;
 
     /**
      * @ORM\Column(type="decimal", scale=2)
-     * @Assert\NotBlank()
      */
     protected $h;
 
@@ -288,28 +288,11 @@ class Thtable {
         return $this->CheckFields;
     }
     /**
-     * @Assert\True(message = "The password cannot match your first name")
+     * @Assert\True(message = "Контрольное поле не корректно")
      */
-    public function isPasswordLegal()
+    public function isSumOk()
     {
-        $fakeNames = array();
-        return false;
-        // check if the name is actually a fake name
-        if (in_array($this->getFirstName(), $fakeNames)) {
-            $context->addViolationAtSubPath('VOC', 'This name sounds totally fake!', array(), null);
-        }
-    }
-
-    public function validate(ExecutionContextInterface $context) {
-        // somehow you have an array of "fake names"
-        $fakeNames = [];
-        // check if the name is actually a fake name
-        if (true) {
-            // If you're using the new 2.5 validation API (you probably are!)
-            $context->buildViolation('This name sounds totally fake!')
-                    ->atPath('VOC')
-                    ->addViolation();
-        }
+        return ($this->getCo2()+$this->getH()+$this->getT()+$this->getVOC()==$this->getCheckFields());
     }
 
 }

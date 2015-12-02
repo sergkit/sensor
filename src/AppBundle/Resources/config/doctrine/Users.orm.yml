@@ -1,0 +1,30 @@
+AppBundle\Entity\Users:
+    type: entity
+    table: users
+    indexes:
+        ix_uid:
+            columns:
+                - uid
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        uid:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
+        name:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
+    lifecycleCallbacks: {  }
