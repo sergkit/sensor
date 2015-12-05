@@ -8,13 +8,16 @@
 
 namespace AppBundle\Controller;
 use AppBundle\Entity\Thtable;
+use AppBundle\Entity\Users;
 use AppBundle\Form\AddData;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class SystemController extends Controller {
+    private $u;
 
     public function aboutAction() {
         return $this->render('system/about.html.twig', ['menu'=>'about']);
@@ -28,10 +31,7 @@ class SystemController extends Controller {
     public function add_recordAction(Request $request) {
         $th = new Thtable();
         $sensor_input_form = $this->createForm(new AddData(), $th);
-        //dump($request);
-        //die();
         $sensor_input_form->handleRequest($request);
-
         if ($sensor_input_form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($th);
@@ -68,4 +68,48 @@ class SystemController extends Controller {
         return "ок";
     }
 
+    public function add_userAction(Request $request) {
+       $this->u=new Users();
+       if ($request->query->count()){
+            if ($this->CheckRequest($request->query->all() , $request->server->all())){
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($this->u);
+                try {
+                    $em->flush();
+                } catch (UniqueConstraintViolationException $e){
+                    return $this->render('system/add_user.html.twig',['menu'=>'', 'show_subscribe'=>false,'res'=>" Юзер существует"]);
+                } catch (\Exception $e){
+                    return $this->render('system/add_user.html.twig',['menu'=>'', 'show_subscribe'=>false,'res'=>$e->getMessage()]);
+                }
+            }
+            return $this->render('system/add_user.html.twig',['menu'=>'', 'show_subscribe'=>false,'res'=>$this->u->result]);
+       }else {
+           $uid='sdfgjhdfkghdkfgjk';
+           $time=time();
+           $key=$this->getParameter('pushall_api_key');
+           $ser=$request->server->all();
+            if(empty($ser['REMOTE_ADDR'])){
+                $ser['REMOTE_ADDR']='xxx';
+            }
+           $sign=md5($key . $uid . $time . $ser['REMOTE_ADDR']);
+           $url=''; //"?pushalluserid=$uid&time=$time&sign=$sign";
+           return $this->render('system/add_user.html.twig',['menu'=>'', 'show_subscribe'=>true, 'url'=>$url]);
+       }
+
+
+    }
+    public function CheckRequest($par, $ser){
+        $this->u->setUid($par['pushalluserid']);
+        $key=$this->getParameter('pushall_api_key');
+        if(empty($ser['REMOTE_ADDR'])){
+            $ser['REMOTE_ADDR']='xxx';
+        }
+        if(md5($key . $this->u->getUid() . $par['time'] . $ser['REMOTE_ADDR'])==$par['sign']){
+            $this->u->result="Юзер добавлен" . $this->u->getUid();
+            return true;
+        }else{
+            $this->u->result="Ошибка контрольной суммы";
+            return false;
+        }
+    }
 }

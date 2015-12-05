@@ -21,3 +21,7 @@ add_record:
 send_form:
     path:   /send_form
     defaults: { _controller: AppBundle:System:send_form }
+
+add_user:
+    path:   /add_user
+    defaults: { _controller: AppBundle:System:add_user }

@@ -36,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @Assert\Callback(methods={"isSumOk"})
  * @ORM\Entity
  * @ORM\Table(name="thtable")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\ThtableRepository")
+ *        //ORM\Entity(repositoryClass="AppBundle\Entity\ThtableRepository")
  */
 class Thtable {
 

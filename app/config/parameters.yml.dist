@@ -17,3 +17,10 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+# https://pushall.ru
+
+    pushall_id: xxxx
+    pushall_key_self: xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    pushall_chanel_id: xxxxx
+    pushall_api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

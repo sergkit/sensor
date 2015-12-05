@@ -1,6 +1,6 @@
-AppBundle\Entity\Users:
+AppBundle\Entity\Users1:
     type: entity
-    table: users
+    table: users1
     uniqueConstraints:
         ix_uid:
             columns:
