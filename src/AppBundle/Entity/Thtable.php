@@ -8,12 +8,12 @@ namespace AppBundle\Entity;
 //php app/console doctrine:generate:entities Имя_бандла
 //https://www.skipper18.com/en/download  визуальное проектирование базы
 //http://www.symfony2cheatsheet.com/
-namespace AppBundle\Entity;
+
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\ExecutionContext;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\NotBlank;
+
 
 
 
@@ -36,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @Assert\Callback(methods={"isSumOk"})
  * @ORM\Entity
  * @ORM\Table(name="thtable")
- *        //ORM\Entity(repositoryClass="AppBundle\Entity\ThtableRepository")
+ *  ORM\Entity(repositoryClass="AppBundle\Entity\ThtableRepository")
  */
 class Thtable {
 
@@ -75,17 +75,17 @@ class Thtable {
     /**
      * @ORM\Column(type="decimal", scale=2)
      */
-    protected $VOC;
+    protected $voc;
 
     /**
      * @ORM\Column(type="decimal", scale=2)
      */
-    protected $VOCR;
+    protected $vocr;
 
     /**
      * @ORM\Column(type="decimal", scale=2)
      */
-    protected $VOCold;
+    protected $vocold;
     protected $CheckFields;
 
     public function __construct() {
@@ -219,8 +219,8 @@ class Thtable {
      *
      * @return Thtable
      */
-    public function setVOC($vOC) {
-        $this->VOC = $vOC;
+    public function setVoc($voc) {
+        $this->voc = $voc;
 
         return $this;
     }
@@ -230,8 +230,8 @@ class Thtable {
      *
      * @return string
      */
-    public function getVOC() {
-        return $this->VOC;
+    public function getVoc() {
+        return $this->voc;
     }
 
     /**
@@ -241,8 +241,8 @@ class Thtable {
      *
      * @return Thtable
      */
-    public function setVOCR($vOCR) {
-        $this->VOCR = $vOCR;
+    public function setVocr($vocr) {
+        $this->vocr = $vocr;
 
         return $this;
     }
@@ -252,8 +252,8 @@ class Thtable {
      *
      * @return string
      */
-    public function getVOCR() {
-        return $this->VOCR;
+    public function getVocr() {
+        return $this->vocr;
     }
 
     /**
@@ -263,8 +263,8 @@ class Thtable {
      *
      * @return Thtable
      */
-    public function setVOCold($vOCold) {
-        $this->VOCold = $vOCold;
+    public function setVocold($vocold) {
+        $this->vocold = $vocold;
 
         return $this;
     }
@@ -274,8 +274,8 @@ class Thtable {
      *
      * @return string
      */
-    public function getVOCold() {
-        return $this->VOCold;
+    public function getVocold() {
+        return $this->vocold;
     }
 
     public function setCheckFields($CheckFields) {
@@ -292,7 +292,7 @@ class Thtable {
      */
     public function isSumOk()
     {
-        return ($this->getCo2()+$this->getH()+$this->getT()+$this->getVOC()==$this->getCheckFields());
+        return ($this->getCo2()+$this->getH()+$this->getT()+$this->getVoc()==$this->getCheckFields());
     }
 
 }

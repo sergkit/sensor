@@ -24,9 +24,9 @@ class AddData extends AbstractType {
         $builder->add('co2', 'number');
         $builder->add('t', 'number');
         $builder->add('h', 'number');
-        $builder->add('VOC', 'number');
-        $builder->add('VOCR', 'number');
-        $builder->add('VOCold', 'number');
+        $builder->add('voc', 'number');
+        $builder->add('vocr', 'number');
+        $builder->add('vocold', 'number');
         $builder->add('CheckFields', 'number');
         $builder->add('save', 'submit', array('label' => 'Добавить'));
     }

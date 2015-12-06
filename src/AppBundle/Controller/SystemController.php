@@ -36,12 +36,12 @@ class SystemController extends Controller {
             $em = $this->getDoctrine()->getManager();
             $em->persist($th);
             $em->flush();
-            return $this->redirectToRoute('report');
+            return new Response($th->getId());
         }
         return $this->render('system/form.html.twig', ['menu' => '', 'form' => $sensor_input_form->createView()]);
     }
 
-    public function send_formAction(){
+    public function send_formAction(Request $request){
         function r(){
             return rand(0, 1000);
         }
@@ -49,12 +49,13 @@ class SystemController extends Controller {
             'add_data[co2]'=>  r(),
             'add_data[t]'=>  r(),
             'add_data[h]'=>  r(),
-            'add_data[VOC]'=>  r(),
-            'add_data[VOCR]'=>  r(),
-            'add_data[VOCold]'=>  r(),
+            'add_data[voc]'=>  r(),
+            'add_data[vocr]'=>  r(),
+            'add_data[vocold]'=>  r(),
         ];
-        $arr['add_data[CheckFields]']=$arr['add_data[co2]']+$arr['add_data[t]']+$arr['add_data[h]']+$arr['add_data[VOC]'];
-       return new Response($this->send_post('http://gitsen/add_record',$arr ));
+        $arr['add_data[CheckFields]']=$arr['add_data[co2]']+$arr['add_data[t]']+$arr['add_data[h]']+$arr['add_data[voc]'];
+       $ser=$request->server->all();
+       return new Response($this->send_post("http://{$ser['HTTP_HOST']}/add_record",$arr ));
 
     }
     private function send_post($url, $arr){
