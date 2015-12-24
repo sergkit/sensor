@@ -25,3 +25,7 @@ send_form:
 add_user:
     path:   /add_user
     defaults: { _controller: AppBundle:System:add_user }
+
+get_stat:
+    path:   /get_stat
+    defaults: { _controller: AppBundle:System:get_stat }

@@ -12,7 +12,7 @@
     <script type="text/javascript">
   g2 = new Dygraph(
     document.getElementById("graphdiv2"),
-    "{{ asset('files/temperatures.csv') }}", // path to CSV file
+    "{{ path('get_stat') }}", // path to CSV file
     {}          // options
   );
 </script>
