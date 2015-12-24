@@ -296,10 +296,10 @@ class Thtable {
 
     public function toArray() {
         return array(
-            $this->getDate()->format('Y-m-d H:i:s'),
+            $this->getDate()->format('Y-m-d\TH:i:s'),
             $this->getCo2(),
-//            $this->getH(),
-//            $this->getT(),
+            $this->getH(),
+            $this->getT(),
 //            $this->getVoc(),
 //            $this->getVoc(),
         );
