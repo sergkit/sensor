@@ -298,10 +298,10 @@ class Thtable {
         return array(
             $this->getDate()->format('Y-m-d\TH:i:s'),
             $this->getCo2(),
+            $this->getVoc()/30,
             $this->getH(),
             $this->getT(),
-//            $this->getVoc(),
-//            $this->getVoc(),
+
         );
     }
 

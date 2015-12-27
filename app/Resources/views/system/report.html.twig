@@ -13,8 +13,40 @@
   g2 = new Dygraph(
     document.getElementById("graphdiv2"),
     "{{ path('get_stat') }}", // path to CSV file
-    {}          // options
+            {
+              labels: [ 'Date', 'CO2', 'VOC', 'H', 'T' ],
+              series : {
+                'H': {
+                  axis: 'y2'
+                },
+                'T': {
+                  axis: 'y2'
+                }
+              },
+              axes: {
+                x: {
+                  gridLineWidth: 2,
+                  drawGrid: true,
+                  independentTicks: true
+                },
+                y: {
+                  labelsKMB: true,
+                  drawGrid: true,
+                  independentTicks: true
+                },
+                y2: {
+                  valueRange: [15, 50],
+                  labelsKMB: true,
+                  ticker: Dygraph.numericLinearTicks,
+                  drawGrid: true,
+                  independentTicks: true,
+                  gridLineColor: "#ff0000",
+                }
+              }
+            }
   );
 </script>
     <!--http://dygraphs.com/tutorial.html-->
 {% endblock %}
+
+ 
