@@ -31,7 +31,8 @@ class SystemController extends Controller {
     }
 
     public function reportAction() {
-        return $this->render('system/report.html.twig', ['menu' => 'report']);
+        $cnt=$this->make_file();
+        return $this->render('system/report.html.twig', ['menu' => 'report', 'cnt'=>round($cnt/3)]);
     }
 
     public function add_recordAction(Request $request) {
@@ -121,42 +122,28 @@ class SystemController extends Controller {
         }
     }
 
-    public function get_statAction() {
-        // get the service container to pass to the closure
+    private function make_file() {
         $container = $this->container;
-        $response = new StreamedResponse(function() use($container) {
-
-            $em = $container->get('doctrine')->getManager();
-
-            // The getExportQuery method returns a query that is used to retrieve
-            // all the objects (lines of your csv file) you need. The iterate method
-            // is used to limit the memory consumption
-
-            $rep = $em->getRepository('AppBundle:Thtable');
-            $results = $rep->findAllForRoom()->iterate();
-            $handle = fopen('php://output', 'r+');
-            fputcsv($handle, [
+        $em = $container->get('doctrine')->getManager();
+        $rep = $em->getRepository('AppBundle:Thtable');
+        $results = $rep->findAllForRoomLastDay()->iterate();
+        $handle = fopen('files/output.csv', 'w');
+        fputcsv($handle, [
             "Дата",
             "CO2",
             "Качество воздуха",
             "Влажность",
             "Температура",
-            ]);
-            while (false !== ($row = $results->next())) {
-                // add a line in the csv file. You need to implement a toArray() method
-                // to transform your object into an array
-                fputcsv($handle, $row[0]->toArray());
-                // used to limit the memory consumption
-                $em->detach($row[0]);
-            }
+        ]);
+        $cnt=0;
+        while (false !== ($row = $results->next())) {
+            fputcsv($handle, $row[0]->toArray());
+            $em->detach($row[0]);
+            $cnt++;
+        }
 
-            fclose($handle);
-        });
-
-        $response->headers->set('Content-Type', 'application/force-download');
-        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
-
-        return $response;
+        fclose($handle);
+        return $cnt;
     }
 
 }

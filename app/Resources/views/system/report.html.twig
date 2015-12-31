@@ -4,49 +4,61 @@
     <div class="page-header">
         <h1>Отчет</h1>
     </div>
-    <div id="graphdiv2" style="width:500px; height:300px;"></div>
+    <div id="graphdiv2" style="width:{{ cnt }}px; height:600px;"></div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
     <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
     <script type="text/javascript">
-  g2 = new Dygraph(
-    document.getElementById("graphdiv2"),
-    "{{ path('get_stat') }}", // path to CSV file
-            {
-              labels: [ 'Date', 'CO2', 'VOC', 'H', 'T' ],
-              series : {
-                'H': {
-                  axis: 'y2'
-                },
-                'T': {
-                  axis: 'y2'
+        g2 = new Dygraph(
+                document.getElementById("graphdiv2"),
+                "{{ asset('files/output.csv') }}", // path to CSV file
+                {
+                    rollPeriod: 14,
+                    showRoller: true,
+                    customBars: true,
+                    labels: ['Date', 'CO2', 'VOC', 'H', 'T'],
+                    legend: 'always',
+                    showRangeSelector: true,
+                    rangeSelectorHeight: 30,
+                    rangeSelectorPlotStrokeColor: 'yellow',
+                    rangeSelectorPlotFillColor: 'lightyellow',
+                    ylabel: 'CO2/VOC',
+                    y2label: 'Влажность/Температура',
+                    series: {
+                        'H': {
+                            axis: 'y2'
+                        },
+                        'T': {
+                            axis: 'y2'
+                        }
+                    },
+                    axes: {
+                        x: {
+                            gridLineWidth: 2,
+                            drawGrid: true,
+                            independentTicks: true
+                        },
+                        y: {
+                            valueRange: [0, 2500],
+                            labelsKMB: true,
+                            drawGrid: true,
+                            independentTicks: true
+                        },
+                        y2: {
+                            valueRange: [10, 50],
+                            label: "Влажность/Температура",
+                            ticker: Dygraph.numericLinearTicks,
+                            drawGrid: true,
+                            independentTicks: true,
+                            gridLineColor: "#ff0000",
+                        }
+                    }
                 }
-              },
-              axes: {
-                x: {
-                  gridLineWidth: 2,
-                  drawGrid: true,
-                  independentTicks: true
-                },
-                y: {
-                  labelsKMB: true,
-                  drawGrid: true,
-                  independentTicks: true
-                },
-                y2: {
-                  valueRange: [15, 50],
-                  labelsKMB: true,
-                  ticker: Dygraph.numericLinearTicks,
-                  drawGrid: true,
-                  independentTicks: true,
-                  gridLineColor: "#ff0000",
-                }
-              }
-            }
-  );
-</script>
-    <!--http://dygraphs.com/tutorial.html-->
+        );
+    </script>
+    <!--http://dygraphs.com/tutorial.html
+    http://itchief.ru/lessons/bootstrap-3/113-bootstrap-3-datetimepicker
+    -->
 {% endblock %}
 
- 
