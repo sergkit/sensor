@@ -4,7 +4,7 @@
     <div class="page-header">
         <h1>Отчет</h1>
     </div>
-    <div id="graphdiv2" style="width:{{ cnt }}px; height:600px;"></div>
+    <div id="graphdiv2" style="width:90%; height:600px;"></div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -16,7 +16,6 @@
                 {
                     rollPeriod: 14,
                     showRoller: true,
-                    customBars: true,
                     labels: ['Date', 'CO2', 'VOC', 'H', 'T'],
                     legend: 'always',
                     showRangeSelector: true,
