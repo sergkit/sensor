@@ -5,6 +5,17 @@
         <h1>Отчет</h1>
     </div>
     <div id="graphdiv2" style="width:90%; height:600px;"></div>
+    <div>
+        <b>Показывать: </b>
+        <input id="0" onclick="change(this)" checked="" type="checkbox">
+        <label for="0">CO2</label>
+        <input id="1" onclick="change(this)" checked="" type="checkbox">
+        <label for="1">VOC</label>
+        <input id="2" onclick="change(this)" checked="" type="checkbox">
+        <label for="2">H</label>
+        <input id="3" onclick="change(this)" checked="" type="checkbox">
+        <label for="3">T</label>
+    </div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -55,6 +66,9 @@
                     }
                 }
         );
+      function change(el) {
+        g2.setVisibility(el.id, el.checked);
+      }
     </script>
     <!--http://dygraphs.com/tutorial.html
     http://itchief.ru/lessons/bootstrap-3/113-bootstrap-3-datetimepicker
