@@ -298,11 +298,12 @@ class Thtable {
         return array(
             $this->getDate()->format('Y-m-d\TH:i:s'),
             $this->getCo2(),
-            (log((($this->getVoc()/3600-0.11)/0.1),0.945)+40)*2200/24+500,
+            (log((($this->getVoc()/36000-0.11)/0.1),0.945)+40)*2200/24+500,
             $this->getH(),
             $this->getT(),
 
         );
     }
-
+   // $this->getT(),
+//(log((($this->getVoc()/3600-0.11)/0.1),0.945)+40)*2200/24+500,
 }
