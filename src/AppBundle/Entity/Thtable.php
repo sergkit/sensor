@@ -20,16 +20,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 
-/*
- * Сервер домашней автоматизации.
- * author kitserg68@gmail.com
- *
- */
 /**
- * Description of Product
+ * Сервер домашней автоматизации.
+ * @author kitserg68@gmail.com
  *
- * @author benjuchis
  */
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -299,10 +295,13 @@ class Thtable {
         return array(
             $this->getDate()->format('Y-m-d\TH:i:s'),
             $this->getCo2(),
-            (log((($this->getVoc()/36000-0.11)/0.1),0.945)+40)*2200/24+500,
+            $this->VocToCo(),
             $this->getH(),
             $this->getT(),
 
         );
+    }
+    public function VocToCo(){
+        return (log((($this->getVoc()/36000-0.11)/0.1),0.945)+40)*2200/24+500;
     }
 }

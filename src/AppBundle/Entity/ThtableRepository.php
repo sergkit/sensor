@@ -20,7 +20,6 @@ class ThtableRepository extends EntityRepository {
     public function findAllForRoom() {
         $qb = $this->createQueryBuilder('th');
         $qb->where('th.room = 1');
-
         return $qb->getQuery();
     }
 /**
