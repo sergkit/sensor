@@ -30,8 +30,8 @@ class SystemController extends Controller {
         return $this->render('system/config.html.twig', ['menu' => 'config']);
     }
 
-    public function reportAction() {
-        $ff = $this->make_file();
+    public function reportAction(Request $request) {
+        $ff = $this->make_file($request);
         return $this->render('system/report.html.twig', ['menu' => 'report', 'ff' => $ff]);
     }
 
@@ -154,12 +154,15 @@ class SystemController extends Controller {
         }
     }
 
-    private function make_file($room = 1) {
+    private function make_file(Request $request) {
         $container = $this->container;
         $em = $container->get('doctrine')->getManager();
+        $room=$request->query->get("room");
+        $room=(empty($room)?1:$room);
         $rep = $em->getRepository('AppBundle:Thtable');
         $results = $rep->findAllForRoomLastDay($room)->iterate();
-        $filename = tempnam("/files", "CSV");
+        $filename = tempnam($request->server->get("DOCUMENT_ROOT") . "/files", "CSV");
+        $path_parts = pathinfo($filename, PATHINFO_BASENAME);
         $handle = fopen($filename, 'w');
         fputcsv($handle, [
             "Дата",
@@ -174,9 +177,8 @@ class SystemController extends Controller {
             $em->detach($row[0]);
             $cnt++;
         }
-
         fclose($handle);
-        return "/files/$filename";
+        return "files/$path_parts";
     }
 
 }

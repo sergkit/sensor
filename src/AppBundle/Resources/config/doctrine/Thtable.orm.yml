@@ -1,6 +1,7 @@
 AppBundle\Entity\Thtable:
     type: entity
     table: thtable
+    repositoryClass: AppBundle\Entity\ThtableRepository
     indexes:
         FKth_room:
             columns:
