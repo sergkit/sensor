@@ -5,9 +5,10 @@ namespace AppBundle\Entity;
 //$ php app/console doctrine:generate:entities AppBundle/Entity/Product генерация геттеров и сеттеров
 //php app/console doctrine:schema:update --force генерация таблиц
 //
-// php app/console doctrine:mapping:import Имя_бандла формат_конфига   генерация модели из базы
+// php app/console doctrine:mapping:import AppBundle yml   генерация модели из базы
 //Таким образом мы создадим конфиг для построения модели. Формат может быть разным, например, yml, xml и т.д. После этого создадим ORM:
-//php app/console doctrine:generate:entities Имя_бандла
+//php app/console doctrine:generate:entities AppBundle
+//php app/console cache:clear
 //https://www.skipper18.com/en/download  визуальное проектирование базы
 //http://www.symfony2cheatsheet.com/
 
@@ -126,11 +127,11 @@ class Thtable {
     /**
      * Set room
      *
-     * @param integer $room
+     * @param \AppBundle\Entity\Rooms $room
      *
      * @return Thtable
      */
-    public function setRoom($room) {
+    public function setRoom(\AppBundle\Entity\Rooms $room = null) {
         $this->room = $room;
 
         return $this;
@@ -139,7 +140,7 @@ class Thtable {
     /**
      * Get room
      *
-     * @return integer
+     * @return \AppBundle\Entity\Rooms
      */
     public function getRoom() {
         return $this->room;
@@ -304,6 +305,4 @@ class Thtable {
 
         );
     }
-   // $this->getT(),
-//(log((($this->getVoc()/3600-0.11)/0.1),0.945)+40)*2200/24+500,
 }

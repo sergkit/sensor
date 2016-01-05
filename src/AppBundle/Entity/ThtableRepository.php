@@ -29,7 +29,7 @@ class ThtableRepository extends EntityRepository {
  * @param string $interval
  * @return Query
  */
-    public function findAllForRoomLastDay($room=1, $interval='T200H') {
+    public function findAllForRoomLastDay($room=1, $interval='T250H') {
         $startDate=new \DateTime('now');
         $qb = $this->createQueryBuilder('th');
         $qb->where('th.room = :room')

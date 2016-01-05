@@ -20,7 +20,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class AddData extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
-
+        $builder->add('room', 'number');
         $builder->add('co2', 'number');
         $builder->add('t', 'number');
         $builder->add('h', 'number');

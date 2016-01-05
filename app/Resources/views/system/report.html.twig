@@ -23,7 +23,7 @@
     <script type="text/javascript">
         g2 = new Dygraph(
                 document.getElementById("graphdiv2"),
-                "{{ asset('files/output.csv') }}", // path to CSV file
+                "{{ asset(ff) }}", // path to CSV file
                 {
                     rollPeriod: 14,
                     showRoller: true,

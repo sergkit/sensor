@@ -31,8 +31,8 @@ class SystemController extends Controller {
     }
 
     public function reportAction() {
-        $cnt=$this->make_file();
-        return $this->render('system/report.html.twig', ['menu' => 'report', 'cnt'=>round($cnt/3)]);
+        $ff = $this->make_file();
+        return $this->render('system/report.html.twig', ['menu' => 'report', 'ff' => $ff]);
     }
 
     public function add_recordAction(Request $request) {
@@ -43,9 +43,41 @@ class SystemController extends Controller {
             $em = $this->getDoctrine()->getManager();
             $em->persist($th);
             $em->flush();
-            return new Response($th->getId());
+            return new Response($this->checkEvents($th));
         }
         return $this->render('system/form.html.twig', ['menu' => '', 'form' => $sensor_input_form->createView()]);
+    }
+/**
+ * Удаление старых файлов отчетов
+ * @param Request $request
+ * @return Response
+ */
+    public function remove_old_filesAction(Request $request) {
+        $dir = $request->server->get("DOCUMENT_ROOT") . "/files";  //читаем эту директорию
+        $todel = 300; // время на удаление
+        try {
+            if ($OpenDir = opendir( $dir)) {
+                while (($file = readdir($OpenDir)) !== false) {
+                    if ($file != "." && $file != "..") {
+                        $dtime = intval(time() - filemtime("{$dir}/{$file}"));
+                        if ($dtime >= $todel)
+                            unlink("{$dir}/{$file}");
+                    }
+                }
+                closedir($OpenDir);
+                $mess="Ok";
+            }
+        } catch (Exception $e) {
+           $mess=$e->getMessage();
+        }
+        return new Response($mess);
+    }
+
+    private function checkEvents(Thtable $th) {
+        $id = $th->getId();
+        $room = $th->getRoom();
+
+        return $id;
     }
 
     public function send_formAction(Request $request) {
@@ -122,12 +154,13 @@ class SystemController extends Controller {
         }
     }
 
-    private function make_file() {
+    private function make_file($room = 1) {
         $container = $this->container;
         $em = $container->get('doctrine')->getManager();
         $rep = $em->getRepository('AppBundle:Thtable');
-        $results = $rep->findAllForRoomLastDay()->iterate();
-        $handle = fopen('files/output.csv', 'w');
+        $results = $rep->findAllForRoomLastDay($room)->iterate();
+        $filename = tempnam("/files", "CSV");
+        $handle = fopen($filename, 'w');
         fputcsv($handle, [
             "Дата",
             "CO2",
@@ -135,7 +168,7 @@ class SystemController extends Controller {
             "Влажность",
             "Температура",
         ]);
-        $cnt=0;
+        $cnt = 0;
         while (false !== ($row = $results->next())) {
             fputcsv($handle, $row[0]->toArray());
             $em->detach($row[0]);
@@ -143,7 +176,7 @@ class SystemController extends Controller {
         }
 
         fclose($handle);
-        return $cnt;
+        return "/files/$filename";
     }
 
 }

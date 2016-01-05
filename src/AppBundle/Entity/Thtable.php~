@@ -1,5 +1,7 @@
 <?php
+
 namespace AppBundle\Entity;
+
 //$ php app/console doctrine:generate:entities AppBundle/Entity/Product генерация геттеров и сеттеров
 //php app/console doctrine:schema:update --force генерация таблиц
 //
@@ -22,9 +24,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * author kitserg68@gmail.com
  *
  */
-
-
-
 /**
  * Description of Product
  *
@@ -287,12 +286,22 @@ class Thtable {
     public function getCheckFields() {
         return $this->CheckFields;
     }
+
     /**
      * @Assert\True(message = "Контрольное поле не корректно")
      */
-    public function isSumOk()
-    {
-        return ($this->getCo2()+$this->getH()+$this->getT()+$this->getVoc()==$this->getCheckFields());
+    public function isSumOk() {
+        return ($this->getCo2() + $this->getH() + $this->getT() + $this->getVoc() == $this->getCheckFields());
     }
 
+    public function toArray() {
+        return array(
+            $this->getDate()->format('Y-m-d\TH:i:s'),
+            $this->getCo2(),
+            (log((($this->getVoc()/36000-0.11)/0.1),0.945)+40)*2200/24+500,
+            $this->getH(),
+            $this->getT(),
+
+        );
+    }
 }

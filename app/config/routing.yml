@@ -29,3 +29,7 @@ add_user:
 get_stat:
     path:   /get_stat
     defaults: { _controller: AppBundle:System:get_stat }
+
+remove_old_files:
+    path:   /remove_old_files
+    defaults: { _controller: AppBundle:System:remove_old_files }

@@ -1,10 +1,13 @@
-AppBundle\Entity\Thtable:
+AppBundle\Entity\Events:
     type: entity
-    table: thtable
+    table: events
     indexes:
-        FKth_room:
+        FK_events_room:
             columns:
                 - room
+        FK_events_user:
+            columns:
+                - userid
     id:
         id:
             type: integer
@@ -15,39 +18,32 @@ AppBundle\Entity\Thtable:
             generator:
                 strategy: IDENTITY
     fields:
-        date:
-            type: datetime
-            nullable: false
-        co2:
+        tmin:
             type: decimal
-            nullable: false
+            nullable: true
             precision: 10
             scale: 2
-        t:
+        hmin:
             type: decimal
-            nullable: false
+            nullable: true
             precision: 10
             scale: 2
-        h:
+        co2max:
             type: decimal
-            nullable: false
+            nullable: true
             precision: 10
             scale: 2
-        voc:
+        vocmax:
             type: decimal
-            nullable: false
+            nullable: true
             precision: 10
             scale: 2
-        vocr:
-            type: decimal
-            nullable: false
-            precision: 10
-            scale: 2
-        vocold:
-            type: decimal
-            nullable: false
-            precision: 10
-            scale: 2
+        description:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
     manyToOne:
         room:
             targetEntity: Rooms
@@ -57,6 +53,16 @@ AppBundle\Entity\Thtable:
             inversedBy: null
             joinColumns:
                 room:
+                    referencedColumnName: id
+            orphanRemoval: false
+        userid:
+            targetEntity: Users
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                userid:
                     referencedColumnName: id
             orphanRemoval: false
     lifecycleCallbacks: {  }
