@@ -1,6 +1,7 @@
 AppBundle\Entity\Events:
     type: entity
     table: events
+    repositoryClass: AppBundle\Entity\EventsRepository
     indexes:
         FK_events_room:
             columns:
@@ -19,6 +20,11 @@ AppBundle\Entity\Events:
                 strategy: IDENTITY
     fields:
         tmin:
+            type: decimal
+            nullable: true
+            precision: 10
+            scale: 2
+        tmax:
             type: decimal
             nullable: true
             precision: 10

@@ -20,7 +20,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class AddData extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
-        $builder->add('room', 'number');
+        $builder->add('room', 'entity', [
+            'class' => 'AppBundle:Rooms',
+            'property' => 'name',
+            'empty_value' => 'Выберите комнату'
+        ]);
         $builder->add('co2', 'number');
         $builder->add('t', 'number');
         $builder->add('h', 'number');
@@ -35,8 +39,7 @@ class AddData extends AbstractType {
         return 'add_data';
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
             'csrf_protection' => false,
         ));

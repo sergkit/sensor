@@ -1,6 +1,7 @@
 AppBundle\Entity\Rooms:
     type: entity
     table: rooms
+    repositoryClass: AppBundle\Entity\RoomsRepository
     id:
         id:
             type: integer

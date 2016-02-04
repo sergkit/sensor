@@ -16,7 +16,10 @@ class Events
      * @var string
      */
     private $tmin;
-
+    /**
+     * @var string
+     */
+    private $tmax;
     /**
      * @var string
      */
@@ -80,6 +83,29 @@ class Events
     public function getTmin()
     {
         return $this->tmin;
+    }
+    /**
+     * Set tmax
+     *
+     * @param string $tmax
+     *
+     * @return Events
+     */
+    public function setTmax($tmax)
+    {
+        $this->tmax = $tmax;
+
+        return $this;
+    }
+
+    /**
+     * Get tmax
+     *
+     * @return string
+     */
+    public function getTmax()
+    {
+        return $this->tmax;
     }
 
     /**
@@ -226,4 +252,3 @@ class Events
         return $this->userid;
     }
 }
-

@@ -8,6 +8,8 @@ namespace AppBundle\Entity;
 // php app/console doctrine:mapping:import AppBundle yml   генерация модели из базы
 //Таким образом мы создадим конфиг для построения модели. Формат может быть разным, например, yml, xml и т.д. После этого создадим ORM:
 //php app/console doctrine:generate:entities AppBundle
+//проверим наличие репозитория
+//    repositoryClass: AppBundle\Entity\ThtableRepository
 //php app/console cache:clear
 //https://www.skipper18.com/en/download  визуальное проектирование базы
 //http://www.symfony2cheatsheet.com/

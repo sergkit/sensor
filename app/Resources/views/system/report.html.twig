@@ -1,74 +1,48 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="page-header">
-        <h1>Отчет</h1>
+    {% form_theme setform with [ ':form:bootstrap_3_horizontal_layout.html.twig'] %}
+    {{ form_start(setform , {'attr': {'class': 'top_set_form'} }) }}
+    <div class="page-header row">
+        <div class="col-md-2"><h1 >Отчет</h1></div>
+
+        <div class="col-md-4">{{ form_row(setform.time_period) }}</div>
+        <div class="col-md-4">{{ form_row(setform.room) }}</div>
+        <div class="col-md-2">
+            <input type="button" onclick="javascript:setdygraph();" class="btn-default btn" id="set_form_save" value="Обновить">
+        </div>
     </div>
-    <div id="graphdiv2" style="width:90%; height:600px;"></div>
-    <div>
+    {{ form_end(setform) }}
+    <div class="row">
+        <div id="graphdiv2" class="col-md-12" style="height:600px;"></div>
+    </div>
+    <div class="row">
         <b>Показывать: </b>
-        <input id="0" onclick="change(this)" checked="" type="checkbox">
+        <input id="0" onclick="change(this);" checked="" type="checkbox">
         <label for="0">CO2</label>
-        <input id="1" onclick="change(this)" checked="" type="checkbox">
+        <input id="1" onclick="change(this);" checked="" type="checkbox">
         <label for="1">VOC</label>
-        <input id="2" onclick="change(this)" checked="" type="checkbox">
+        <input id="2" onclick="change(this);" checked="" type="checkbox">
         <label for="2">H</label>
-        <input id="3" onclick="change(this)" checked="" type="checkbox">
+        <input id="3" onclick="change(this);" checked="" type="checkbox">
         <label for="3">T</label>
     </div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
     <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-    <script type="text/javascript">
-        g2 = new Dygraph(
-                document.getElementById("graphdiv2"),
-                "{{ asset(ff) }}", // path to CSV file
-                {
-                    rollPeriod: 14,
-                    showRoller: true,
-                    labels: ['Date', 'CO2', 'VOC', 'H', 'T'],
-                    legend: 'always',
-                    showRangeSelector: true,
-                    rangeSelectorHeight: 30,
-                    rangeSelectorPlotStrokeColor: 'yellow',
-                    rangeSelectorPlotFillColor: 'lightyellow',
-                    ylabel: 'CO2/VOC',
-                    y2label: 'Влажность/Температура',
-                    series: {
-                        'H': {
-                            axis: 'y2'
-                        },
-                        'T': {
-                            axis: 'y2'
-                        }
-                    },
-                    axes: {
-                        x: {
-                            gridLineWidth: 2,
-                            drawGrid: true,
-                            independentTicks: true
-                        },
-                        y: {
-                            valueRange: [0, 2500],
-                            labelsKMB: true,
-                            drawGrid: true,
-                            independentTicks: true
-                        },
-                        y2: {
-                            valueRange: [10, 50],
-                            label: "Влажность/Температура",
-                            ticker: Dygraph.numericLinearTicks,
-                            drawGrid: true,
-                            independentTicks: true,
-                            gridLineColor: "#ff0000",
-                        }
-                    }
-                }
-        );
-      function change(el) {
-        g2.setVisibility(el.id, el.checked);
-      }
+    <div id='dygraph_scr' style="display:none">
+    {% include ':system:dygrscr.html.twig' %}
+    </div>
+    <script>
+    function setdygraph(){
+        var gt=jQuery(".top_set_form").serialize();
+        jQuery('#indicator').show();
+        jQuery.get('{{ path('upd_rep') }}', gt, function(data){
+            $("#dygraph_scr").html(data);
+            jQuery('#indicator').hide();
+        })
+    }
     </script>
     <!--http://dygraphs.com/tutorial.html
     http://itchief.ru/lessons/bootstrap-3/113-bootstrap-3-datetimepicker

@@ -11,6 +11,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Thtable;
 use AppBundle\Entity\Users;
 use AppBundle\Form\AddData;
+use AppBundle\Form\setForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,10 +32,27 @@ class SystemController extends Controller {
     }
 
     public function reportAction(Request $request) {
-        $ff = $this->make_file($request);
-        return $this->render('system/report.html.twig', ['menu' => 'report', 'ff' => $ff]);
+        $interval = $this->getInterval($request);
+        $room = $this->getRoom($request);
+        $file = $this->getFile($request);
+        $ff = $this->make_file($room, $interval, $file);
+
+        $container = $this->container;
+        $em = $container->get('doctrine')->getManager();
+        $rep = $em->getRepository('AppBundle:Rooms');
+        $rooms = $rep->findAll();
+
+        $set_input_form = $this->createForm(new setForm(), ['rooms' => $rep->PrepareRooms($rooms), 'interval' => $interval, 'room' => $room]);
+        return $this->render('system/report.html.twig', ['menu' => 'report', 'ff' => $ff, 'setform' => $set_input_form->createView()]);
     }
 
+    /**
+     * Добавление новой записи с датчиков  в базу данных
+     * Проверка выхода показаний за границы допустимого
+     * генерация пуш сообщений при необходимости
+     * @param Request $request
+     * @return Response
+     */
     public function add_recordAction(Request $request) {
         $th = new Thtable();
         $sensor_input_form = $this->createForm(new AddData(), $th);
@@ -47,16 +65,17 @@ class SystemController extends Controller {
         }
         return $this->render('system/form.html.twig', ['menu' => '', 'form' => $sensor_input_form->createView()]);
     }
-/**
- * Удаление старых файлов отчетов
- * @param Request $request
- * @return Response
- */
+
+    /**
+     * Удаление старых файлов отчетов
+     * @param Request $request
+     * @return Response
+     */
     public function remove_old_filesAction(Request $request) {
         $dir = $request->server->get("DOCUMENT_ROOT") . "/files";  //читаем эту директорию
         $todel = 300; // время на удаление
         try {
-            if ($OpenDir = opendir( $dir)) {
+            if ($OpenDir = opendir($dir)) {
                 while (($file = readdir($OpenDir)) !== false) {
                     if ($file != "." && $file != "..") {
                         $dtime = intval(time() - filemtime("{$dir}/{$file}"));
@@ -65,10 +84,10 @@ class SystemController extends Controller {
                     }
                 }
                 closedir($OpenDir);
-                $mess="Ok";
+                $mess = "Ok";
             }
         } catch (Exception $e) {
-           $mess=$e->getMessage();
+            $mess = $e->getMessage();
         }
         return new Response($mess);
     }
@@ -76,8 +95,20 @@ class SystemController extends Controller {
     private function checkEvents(Thtable $th) {
         $id = $th->getId();
         $room = $th->getRoom();
+        $em = $this->container->get('doctrine')->getManager();
+        $rep = $em->getRepository('AppBundle:Thtable');
+        /* @var $rep ThtableRepository */
+        $stat = $rep->getLastStat($room);
+        $events = $this->prepareEvents($stat, $room);
+        return $id . $events;
+    }
 
-        return $id;
+    private function prepareEvents($stat, $room) {
+        $em = $this->container->get('doctrine')->getManager();
+        /* @var $ev AppBundle\Entity\EventsRepository */
+        $ev = $em->getRepository('AppBundle:Events');
+        $ev->setParams($this->getParameter('pushall_chanel_id'), $this->getParameter('pushall_api_key'));
+        return $ev->checkEvents($stat, $room);
     }
 
     public function send_formAction(Request $request) {
@@ -87,6 +118,7 @@ class SystemController extends Controller {
         }
 
         $arr = [
+            'add_data[room]' => '2',
             'add_data[co2]' => r(),
             'add_data[t]' => r(),
             'add_data[h]' => r(),
@@ -110,33 +142,12 @@ class SystemController extends Controller {
         return "ок";
     }
 
-    public function add_userAction(Request $request) {
-        $this->u = new Users();
-        if ($request->query->count()) {
-            if ($this->CheckRequest($request->query->all(), $request->server->all())) {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($this->u);
-                try {
-                    $em->flush();
-                } catch (UniqueConstraintViolationException $e) {
-                    return $this->render('system/add_user.html.twig', ['menu' => '', 'show_subscribe' => false, 'res' => " Юзер существует"]);
-                } catch (\Exception $e) {
-                    return $this->render('system/add_user.html.twig', ['menu' => '', 'show_subscribe' => false, 'res' => $e->getMessage()]);
-                }
-            }
-            return $this->render('system/add_user.html.twig', ['menu' => '', 'show_subscribe' => false, 'res' => $this->u->result]);
-        } else {
-            $uid = 'sdfgjhdfkghdkfgjk';
-            $time = time();
-            $key = $this->getParameter('pushall_api_key');
-            $ser = $request->server->all();
-            if (empty($ser['REMOTE_ADDR'])) {
-                $ser['REMOTE_ADDR'] = 'xxx';
-            }
-            $sign = md5($key . $uid . $time . $ser['REMOTE_ADDR']);
-            $url = ''; //"?pushalluserid=$uid&time=$time&sign=$sign";
-            return $this->render('system/add_user.html.twig', ['menu' => '', 'show_subscribe' => true, 'url' => $url]);
-        }
+    public function upd_repAction(Request $request) {
+        $interval = $this->getInterval($request);
+        $room = $this->getRoom($request);
+        $file = $this->getFile($request);
+        $ff = $this->make_file($room, $interval, $file);
+        return $this->render('system/dygrscr.html.twig', ['ff' => $ff]);
     }
 
     public function CheckRequest($par, $ser) {
@@ -154,23 +165,13 @@ class SystemController extends Controller {
         }
     }
 
-    private function make_file(Request $request) {
+    private function make_file($room, $interval, $filename) {
         $container = $this->container;
         $em = $container->get('doctrine')->getManager();
-        $room=$request->query->get("room");
-        $room=(empty($room)?1:$room);
         $rep = $em->getRepository('AppBundle:Thtable');
-        $results = $rep->findAllForRoomLastDay($room)->iterate();
-        $filename = tempnam($request->server->get("DOCUMENT_ROOT") . "/files", "CSV");
+        $results = $rep->findAllForRoomLastDay($room, $interval)->iterate();
         $path_parts = pathinfo($filename, PATHINFO_BASENAME);
         $handle = fopen($filename, 'w');
-        fputcsv($handle, [
-            "Дата",
-            "CO2",
-            "Качество воздуха",
-            "Влажность",
-            "Температура",
-        ]);
         $cnt = 0;
         while (false !== ($row = $results->next())) {
             fputcsv($handle, $row[0]->toArray());
@@ -179,6 +180,20 @@ class SystemController extends Controller {
         }
         fclose($handle);
         return "files/$path_parts";
+    }
+
+    private function getRoom(Request $request) {
+        $room = $request->query->get("set_form");
+        return (empty($room['room']) ? 1 : $room['room']);
+    }
+
+    private function getInterval(Request $request) {
+        $interval = $request->query->get("set_form");
+        return (empty($interval['time_period']) ? "7D" : $interval['time_period']);
+    }
+
+    private function getFile(Request $request) {
+        return tempnam($request->server->get("DOCUMENT_ROOT") . "/files", "CSV");
     }
 
 }

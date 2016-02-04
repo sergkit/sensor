@@ -1,0 +1,38 @@
+AppBundle\Entity\Histories:
+    type: entity
+    table: histories
+    repositoryClass: AppBundle\Entity\HistoriesRepository
+    indexes:
+        ix_ev_id:
+            columns:
+                - ev_id
+                - ev_time
+        IDX_CFF1CEA340A4EC42:
+            columns:
+                - ev_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        evTime:
+            type: datetime
+            nullable: true
+            column: ev_time
+    manyToOne:
+        ev:
+            targetEntity: Events
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                ev_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

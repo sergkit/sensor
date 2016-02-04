@@ -5,6 +5,18 @@ namespace AppBundle\Entity;
 /**
  * Rooms
  */
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+/**
+ * Rooms
+ *
+ * @ORM\Table(name="rooms")
+ * @ORM\Entity
+ * @UniqueEntity("id")RoomsRepository")
+ */
 class Rooms
 {
     /**
@@ -81,4 +93,3 @@ class Rooms
         return $this->descr;
     }
 }
-

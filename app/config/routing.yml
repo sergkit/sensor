@@ -24,7 +24,7 @@ send_form:
 
 add_user:
     path:   /add_user
-    defaults: { _controller: AppBundle:System:add_user }
+    defaults: { _controller: AppBundle:PushAll:add_user }
 
 get_stat:
     path:   /get_stat
@@ -33,3 +33,6 @@ get_stat:
 remove_old_files:
     path:   /remove_old_files
     defaults: { _controller: AppBundle:System:remove_old_files }
+upd_rep:
+    path:   /upd_rep
+    defaults: { _controller: AppBundle:System:upd_rep }

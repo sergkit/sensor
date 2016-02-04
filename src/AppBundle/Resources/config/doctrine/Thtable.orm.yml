@@ -3,7 +3,11 @@ AppBundle\Entity\Thtable:
     table: thtable
     repositoryClass: AppBundle\Entity\ThtableRepository
     indexes:
-        FKth_room:
+        ix_room_time:
+            columns:
+                - room
+                - date
+        IDX_51E7DE2A729F519B:
             columns:
                 - room
     id:
