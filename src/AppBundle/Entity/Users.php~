@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(name="users", indexes={@ORM\Index(name="ix_uid", columns={"uid"})})
  * @ORM\Entity
  * @UniqueEntity("uid")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\UsersRepository")
  */
 class Users
 {

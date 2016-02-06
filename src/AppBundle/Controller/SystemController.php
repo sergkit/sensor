@@ -21,7 +21,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class SystemController extends Controller {
 
-    private $u;
+
 
     public function aboutAction(Request $request) {
         return $this->render('system/about.html.twig', ['menu' => 'about']);
@@ -150,21 +150,6 @@ class SystemController extends Controller {
         $file = $this->getFile($request);
         $ff = $this->make_file($room, $interval, $file);
         return $this->render('system/dygrscr.html.twig', ['ff' => $ff]);
-    }
-
-    public function CheckRequest($par, $ser) {
-        $this->u->setUid($par['pushalluserid']);
-        $key = $this->getParameter('pushall_api_key');
-        if (empty($ser['REMOTE_ADDR'])) {
-            $ser['REMOTE_ADDR'] = 'xxx';
-        }
-        if (md5($key . $this->u->getUid() . $par['time'] . $ser['REMOTE_ADDR']) == $par['sign']) {
-            $this->u->result = "Юзер добавлен" . $this->u->getUid();
-            return true;
-        } else {
-            $this->u->result = "Ошибка контрольной суммы";
-            return false;
-        }
     }
 
     private function make_file($room, $interval, $filename) {

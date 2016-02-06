@@ -5,13 +5,16 @@
  *
  * @author benjuchis
  */
+namespace AppBundle\Controller;
+
+use AppBundle\Entity\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 class PushAllController extends Controller {
-
+    private $u;
     public function add_userAction(Request $request) {
         $this->u = new Users();
         if ($request->query->count()) {
@@ -27,19 +30,25 @@ class PushAllController extends Controller {
                 }
             }
             return $this->render('system/add_user.html.twig', ['menu' => '', 'show_subscribe' => false, 'res' => $this->u->result]);
+        }else {
+            return $this->render('system/add_user.html.twig', ['menu' => '', 'show_subscribe' => true, 'res' => '']);
         }
-//        else {
-//            $uid = 'sdfgjhdfkghdkfgjk';
-//            $time = time();
-//            $key = $this->getParameter('pushall_api_key');
-//            $ser = $request->server->all();
-//            if (empty($ser['REMOTE_ADDR'])) {
-//                $ser['REMOTE_ADDR'] = 'xxx';
-//            }
-//            $sign = md5($key . $uid . $time . $ser['REMOTE_ADDR']);
-//            $url = ''; //"?pushalluserid=$uid&time=$time&sign=$sign";
-//            return $this->render('system/add_user.html.twig', ['menu' => '', 'show_subscribe' => true, 'url' => $url]);
-//        }
+
+    }
+
+    private function CheckRequest($par, $ser) {
+        $this->u->setUid($par['pushalluserid']);
+        $key = $this->getParameter('pushall_api_key');
+        if (empty($ser['REMOTE_ADDR'])) {
+            $ser['REMOTE_ADDR'] = 'xxx';
+        }
+        if (md5($key . $this->u->getUid() . $par['time'] . $ser['REMOTE_ADDR']) == $par['sign']) {
+            $this->u->result = "Юзер добавлен" . $this->u->getUid();
+            return true;
+        } else {
+            $this->u->result = "Ошибка контрольной суммы";
+            return false;
+        }
     }
 
 }
