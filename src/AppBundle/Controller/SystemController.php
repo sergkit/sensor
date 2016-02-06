@@ -57,6 +57,8 @@ class SystemController extends Controller {
         $th = new Thtable();
         $sensor_input_form = $this->createForm(new AddData(), $th);
         $sensor_input_form->handleRequest($request);
+        $this->log($request->request,
+                    $request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root').  "/files/log.log");
         if ($sensor_input_form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($th);
@@ -72,7 +74,7 @@ class SystemController extends Controller {
      * @return Response
      */
     public function remove_old_filesAction(Request $request) {
-        $dir = $request->server->get("DOCUMENT_ROOT") . "/files";  //читаем эту директорию
+        $dir = $request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root').  "/files";  //читаем эту директорию
         $todel = 300; // время на удаление
         try {
             if ($OpenDir = opendir($dir)) {
@@ -194,6 +196,13 @@ class SystemController extends Controller {
 
     private function getFile(Request $request) {
         return tempnam($request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root'). "/files", "CSV"). ".csv";
+    }
+
+    private function log($arr, $file){
+       $handle = fopen($file, 'a+');
+        fwrite($handle, print_r($arr, true). "/n");
+        fclose($handle);
+
     }
 
 }
