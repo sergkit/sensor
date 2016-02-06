@@ -23,7 +23,7 @@ class SystemController extends Controller {
 
     private $u;
 
-    public function aboutAction() {
+    public function aboutAction(Request $request) {
         return $this->render('system/about.html.twig', ['menu' => 'about']);
     }
 
@@ -193,7 +193,7 @@ class SystemController extends Controller {
     }
 
     private function getFile(Request $request) {
-        return tempnam($request->server->get("DOCUMENT_ROOT") . "/files", "CSV");
+        return tempnam($request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root'). "/files", "CSV"). ".csv";
     }
 
 }

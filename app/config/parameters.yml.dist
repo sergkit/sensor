@@ -24,3 +24,5 @@ parameters:
     pushall_key_self: xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     pushall_chanel_id: xxxxx
     pushall_api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# зависит от хостинга
+    document_root: /web
