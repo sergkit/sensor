@@ -93,7 +93,7 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
     }
 
     private function checkH(\AppBundle\Entity\Events $e, $stat) {
-        if ($e->getHmin() > 0 && $e->getTmax() > $stat['avg_t'] && $e->getHmin() < $stat['avg_h']) {
+        if ($e->getHmin() > 0 && $e->getTmax() < $stat['avg_t'] && $e->getHmin() > $stat['avg_h']) {
             $this->addEvent($e, $stat['avg_h']);
         }
     }

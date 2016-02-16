@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="page-header row">
+        <div class="col-md-12"><h1 >Текущее состояние воздуха</h1></div>
+    </div>
+    <div class="row">
+        {% if not cur  %}
+            Нет данных по состоянию воздуха
+        {% else %}
+            {% for c in cur %}
+                <h3 >Комната: {{ c.name }}</h3>
+                <ul>
+                    {% if c.avg_co2  %}
+                        <li>Углекислый газ:{{ "%01.0f"|format(c.avg_co2) }}ppm</li>
+                    {% endif %}
+                    {% if c.avg_t  %}
+                        <li>Температура:{{ "%01.2f"|format(c.avg_t) }}&deg;C</li>
+                    {% endif %}
+                    {% if c.avg_h  %}
+                        <li>Влажность:{{ "%01.2f"|format(c.avg_h) }}%</li>
+                    {% endif %}
+                    {% if c.avg_voc  %}
+                        <li>Датчик VOC:{{ "%01.0f"|format(c.avg_voc) }}</li>
+                    {% endif %}
+
+                </ul>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

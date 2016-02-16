@@ -1,6 +1,6 @@
 home:
     path:   /
-    defaults: { _controller: AppBundle:System:report }
+    defaults: { _controller: AppBundle:System:current }
 
 about:
     path:   /about
@@ -14,6 +14,10 @@ report:
     path:   /report
     defaults: { _controller: AppBundle:System:report }
 
+current:
+    path:   /current
+    defaults: { _controller: AppBundle:System:current }
+    
 add_record:
     path:   /add_record
     defaults: { _controller: AppBundle:System:add_record }

@@ -31,6 +31,15 @@ class SystemController extends Controller {
         return $this->render('system/config.html.twig', ['menu' => 'config']);
     }
 
+    public function currentAction(Request $request) {
+        $em = $this->container->get('doctrine')->getManager();
+        $rep = $em->getRepository('AppBundle:Thtable');
+        /* @var $rep ThtableRepository */
+        $stat = $rep->getAllStat();
+        dump($stat);
+        return $this->render('system/current.html.twig', ['menu' => '', 'cur'=>$stat]);
+    }
+
     public function reportAction(Request $request) {
         $interval = $this->getInterval($request);
         $room = $this->getRoom($request);
