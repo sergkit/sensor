@@ -9,6 +9,7 @@ namespace AppBundle\Entity;
  */
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Description of ThtableRepository
@@ -60,15 +61,15 @@ class ThtableRepository extends EntityRepository {
 
         $qb = $this->createQueryBuilder('th');
         $qb->select('r.name', 'avg(th.co2) as avg_co2', 'avg(th.t) as avg_t' , 'avg(th.h)  as avg_h', 'avg(th.voc)  as avg_voc')
-                ->join('AppBundle\Entity\Rooms', 'r')
+                ->innerJoin('AppBundle\Entity\Rooms', 'r', Join::WITH, 'r.id=th.room')
                 ->Where('th.date>:dd')
                 ->groupBy('r.name')
-                ->setParameter('dd', $this->getDateInterval("P20D"));
+                ->setParameter('dd', $this->getDateInterval());
         return $qb->getQuery()->getArrayResult();
     }
 
     private function getDateInterval($s="PT7M"){
-      $startDate=new \DateTime('now');
+      $startDate=new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
       return $startDate->sub(new \DateInterval($s));
     }
 }

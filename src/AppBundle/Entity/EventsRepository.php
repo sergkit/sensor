@@ -38,7 +38,7 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
      */
     public function checkEvents($s, $room) {
         $em = $this->getEntityManager();
-        $n = new \DateTime('now');
+        $n = new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
         $ev_time = $n->sub(new \DateInterval($this->minDelay));
         $query = $em->createQuery("select e
             from AppBundle:Events e
