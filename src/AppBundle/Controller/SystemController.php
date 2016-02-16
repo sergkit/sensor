@@ -36,7 +36,6 @@ class SystemController extends Controller {
         $rep = $em->getRepository('AppBundle:Thtable');
         /* @var $rep ThtableRepository */
         $stat = $rep->getAllStat();
-        dump($stat);
         return $this->render('system/current.html.twig', ['menu' => '', 'cur'=>$stat]);
     }
 
