@@ -72,7 +72,11 @@ class SystemController extends Controller {
             $em->persist($th);
             $em->flush();
             return new Response($this->checkEvents($th));
+        }else {
+            $this->log("errors request",
+                    $request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root').  "/files/log.log");
         }
+
         return $this->render('system/form.html.twig', ['menu' => '', 'form' => $sensor_input_form->createView()]);
     }
 
