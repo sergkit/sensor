@@ -73,7 +73,7 @@ class SystemController extends Controller {
             $em->flush();
             return new Response($this->checkEvents($th));
         }else {
-            $this->log("errors request",
+            $this->log("errors request<br>" . $sensor_input_form->getErrors(true),
                     $request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root').  "/files/log.log");
         }
 
