@@ -289,7 +289,7 @@ class Thtable {
      * @Assert\True(message = "Контрольное поле не корректно")
      */
     public function isSumOk() {
-        return ($this->getCo2() + $this->getH() + $this->getT() + $this->getVoc() == $this->getCheckFields());
+        return (round($this->getCo2() + $this->getH() + $this->getT() + $this->getVoc()) == round($this->getCheckFields()));
     }
 
     public function toArray() {
