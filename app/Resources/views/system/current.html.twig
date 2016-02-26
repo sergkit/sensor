@@ -10,16 +10,16 @@
             {% for c in cur %}
                 <h3 >Комната: {{ c.name }}</h3>
                 <ul>
-                    {% if c.avg_co2  %}
+                    {% if c.avg_co2>100  %}
                         <li>Углекислый газ:{{ "%01.0f"|format(c.avg_co2) }}ppm</li>
                     {% endif %}
-                    {% if c.avg_t  %}
+                    {% if c.avg_t>0  %}
                         <li>Температура:{{ "%01.2f"|format(c.avg_t) }}&deg;C</li>
                     {% endif %}
-                    {% if c.avg_h  %}
+                    {% if c.avg_h >0 %}
                         <li>Влажность:{{ "%01.2f"|format(c.avg_h) }}%</li>
                     {% endif %}
-                    {% if c.avg_voc  %}
+                    {% if c.avg_voc >100 %}
                         <li>Датчик VOC:{{ "%01.0f"|format(c.avg_voc) }}</li>
                     {% endif %}
 
