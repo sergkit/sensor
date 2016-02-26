@@ -193,7 +193,7 @@ class SystemController extends Controller {
 
     private function log($arr, $file){
        $handle = fopen($file, 'a+');
-       fwrite($handle, date());
+       fwrite($handle, date("Y-m-d H:i:s"));
        fwrite($handle, print_r($arr, true));
        fclose($handle);
     }
