@@ -219,7 +219,6 @@ class Thtable {
      */
     public function setVoc($voc) {
         $this->voc = $voc;
-
         return $this;
     }
 
