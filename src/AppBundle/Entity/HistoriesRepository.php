@@ -10,12 +10,35 @@ namespace AppBundle\Entity;
  */
 class HistoriesRepository extends \Doctrine\ORM\EntityRepository {
 
+    private $minDelay = "PT30M";  // задержка до повторной отправки сообщения
+
     public function addHisEvent(\AppBundle\Entity\Events $e) {
-        $h=new Histories();
+        $h = new Histories();
         $h->setEv($e);
-        $em=$this->getEntityManager();
+        $em = $this->getEntityManager();
         $em->persist($h);
         $em->flush();
+    }
+/**
+ * проверка наличия событий в данной комнате за последнее время. Возвращает количество событий
+ * @param \AppBundle\Entity\Rooms $room
+ * @param string $min_delay
+ * @return integer
+ */
+    public function checkStatus(\AppBundle\Entity\Rooms $room, $min_delay) {
+        $this->minDelay = $min_delay;
+        $em = $this->getEntityManager();
+        $n = new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
+        $ev_time = $n->sub(new \DateInterval($this->minDelay));
+        $query = $em->createQuery("select h
+            from AppBundle:Histories h
+            join h.ev e
+            where e.room = :room and
+                  h.evTime >:ev_time")
+                ->setParameter('room', $room->getId())
+                ->setParameter("ev_time", $ev_time);
+        $ev = $query->getResult();
+        return(count($ev));
     }
 
 }

@@ -10,18 +10,18 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Thtable;
 use AppBundle\Entity\Users;
+use AppBundle\Entity\Rooms;
 use AppBundle\Form\AddData;
 use AppBundle\Form\setForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class SystemController extends Controller {
-
-
 
     public function aboutAction(Request $request) {
         return $this->render('system/about.html.twig', ['menu' => 'about']);
@@ -36,7 +36,7 @@ class SystemController extends Controller {
         $rep = $em->getRepository('AppBundle:Thtable');
         /* @var $rep ThtableRepository */
         $stat = $rep->getAllStat();
-        return $this->render('system/current.html.twig', ['menu' => '', 'cur'=>$stat]);
+        return $this->render('system/current.html.twig', ['menu' => '', 'cur' => $stat]);
     }
 
     public function reportAction(Request $request) {
@@ -65,16 +65,14 @@ class SystemController extends Controller {
         $th = new Thtable();
         $sensor_input_form = $this->createForm(new AddData(), $th);
         $sensor_input_form->handleRequest($request);
-        $this->log($request->request,
-                    $request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root').  "/files/log.log");
+        $this->log($request->request, $request->server->get("DOCUMENT_ROOT") . $this->getParameter('document_root') . "/files/log.log");
         if ($sensor_input_form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($th);
             $em->flush();
             return new Response($this->checkEvents($th));
-        }else {
-            $this->log("errors request<br>" . $sensor_input_form->getErrors(true),
-                    $request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root').  "/files/log.log");
+        } else {
+            $this->log("errors request<br>" . $sensor_input_form->getErrors(true), $request->server->get("DOCUMENT_ROOT") . $this->getParameter('document_root') . "/files/log.log");
         }
 
         return $this->render('system/form.html.twig', ['menu' => '', 'form' => $sensor_input_form->createView()]);
@@ -86,7 +84,7 @@ class SystemController extends Controller {
      * @return Response
      */
     public function remove_old_filesAction(Request $request) {
-        $dir = $request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root').  "/files";  //читаем эту директорию
+        $dir = $request->server->get("DOCUMENT_ROOT") . $this->getParameter('document_root') . "/files";  //читаем эту директорию
         $todel = 300; // время на удаление
         try {
             if ($OpenDir = opendir($dir)) {
@@ -106,6 +104,20 @@ class SystemController extends Controller {
         return new Response($mess);
     }
 
+    /**
+     * получить состояние воздуха в комнате . Если все в порядке - вернуть 0, если один из параметров зашкаливает -1. Дальнейшая проверка на Arduino
+     * @param int $room_id
+     * @return Response
+     */
+    public function get_statusAction($room_id) {
+        $em = $this->container->get('doctrine')->getManager();
+        $room=$em->getRepository("AppBundle:Rooms")->find($room_id);
+        $mess = $em->getRepository('AppBundle:Histories')
+                ->checkStatus($room,$this->getParameter('min_delay'));
+
+        return new Response($mess);
+    }
+
     private function checkEvents(Thtable $th) {
         $id = $th->getId();
         $room = $th->getRoom();
@@ -121,7 +133,10 @@ class SystemController extends Controller {
         $em = $this->container->get('doctrine')->getManager();
         /* @var $ev AppBundle\Entity\EventsRepository */
         $ev = $em->getRepository('AppBundle:Events');
-        $ev->setParams($this->getParameter('pushall_chanel_id'), $this->getParameter('pushall_api_key'));
+        $ev->setParams($this->getParameter('pushall_chanel_id'),
+                $this->getParameter('pushall_api_key'),
+                $this->getParameter('url'),
+                $this->getParameter('min_delay'));
         return $ev->checkEvents($stat, $room);
     }
 
@@ -192,14 +207,14 @@ class SystemController extends Controller {
     }
 
     private function getFile(Request $request) {
-        return tempnam($request->server->get("DOCUMENT_ROOT"). $this->getParameter('document_root'). "/files", "CSV"). ".csv";
+        return tempnam($request->server->get("DOCUMENT_ROOT") . $this->getParameter('document_root') . "/files", "CSV") . ".csv";
     }
 
-    private function log($arr, $file){
-       $handle = fopen($file, 'a+');
-       fwrite($handle, date("Y-m-d H:i:s"));
-       fwrite($handle, print_r($arr, true));
-       fclose($handle);
+    private function log($arr, $file) {
+        $handle = fopen($file, 'a+');
+        fwrite($handle, date("Y-m-d H:i:s"));
+        fwrite($handle, print_r($arr, true));
+        fclose($handle);
     }
 
 }

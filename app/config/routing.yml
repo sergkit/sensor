@@ -17,7 +17,7 @@ report:
 current:
     path:   /current
     defaults: { _controller: AppBundle:System:current }
-    
+
 add_record:
     path:   /add_record
     defaults: { _controller: AppBundle:System:add_record }
@@ -40,3 +40,7 @@ remove_old_files:
 upd_rep:
     path:   /upd_rep
     defaults: { _controller: AppBundle:System:upd_rep }
+get_status:
+    path:   /get_status/{room_id}
+    defaults: { _controller: AppBundle:System:get_status }
+

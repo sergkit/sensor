@@ -1,5 +1,4 @@
 <?php
-
 namespace AppBundle\Entity;
 
 /**
@@ -19,19 +18,20 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
         'uid' => '',
         'title' => '',
         'text' => '',
-        'url' => 'http://myhome828.esy.es/',
+        'url' => '',
     ];
     private $minDelay = "PT30M";  // задержка до повторной отправки сообщения
 
-    public function setParams($id, $api_key) {
+    public function setParams($id, $api_key, $url, $min_delay) {
         $this->params['id'] = $id;
         $this->params['key'] = $api_key;
+        $this->minDelay=  $min_delay;
+        $this->params['url'] = $url;
     }
 
     /**
      * Функция  выбирает варианты событий для заданной комнаты, по которым не было оповещений за $minDelay
      * проверяет выходы параметров за пределы, отправляет уведомления,
-     * TODO сохранить запись об отправленном сообщении в history
      * @param type $s
      * @param type $room
      * @return type
@@ -71,10 +71,6 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
 
         }
         return $ret;
-
-
-
-//        https://pushall.ru/api.php?type=unicast&id=818&key=34d6dcef388cb29ac6738d46dfd8e02e&uid=9864&title=testTitle&text=testMessage
     }
 
     private function send_post() {

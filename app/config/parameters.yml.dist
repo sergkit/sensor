@@ -26,3 +26,5 @@ parameters:
     pushall_api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 # зависит от хостинга
     document_root: /web
+    url:    http://myhome.ru/
+    min_delay: PT30M
