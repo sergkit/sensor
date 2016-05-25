@@ -38,7 +38,7 @@ class HistoriesRepository extends \Doctrine\ORM\EntityRepository {
                 ->setParameter('room', $room->getId())
                 ->setParameter("ev_time", $ev_time);
         $ev = $query->getResult();
-        return(count($ev));
+        return("##". count($ev));
     }
 
 }
