@@ -1,4 +1,5 @@
 <?php
+
 namespace AppBundle\Entity;
 
 /**
@@ -20,12 +21,14 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
         'text' => '',
         'url' => '',
     ];
+    private $ev_time;
     private $minDelay = "PT30M";  // задержка до повторной отправки сообщения
+    private $status = 0; // статус для зажигания светодиода на блоке 0нормально, 1 - красный
 
     public function setParams($id, $api_key, $url, $min_delay) {
         $this->params['id'] = $id;
         $this->params['key'] = $api_key;
-        $this->minDelay=  $min_delay;
+        $this->minDelay = $min_delay;
         $this->params['url'] = $url;
     }
 
@@ -39,23 +42,25 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
     public function checkEvents($s, $room) {
         $em = $this->getEntityManager();
         $n = new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
-        $ev_time = $n->sub(new \DateInterval($this->minDelay));
-        $query = $em->createQuery("select e
-            from AppBundle:Events e
-            join e.room r
-            join e.userid u
-            where e.room = :room and
-            e.id not in (
-            select IDENTITY(h.ev) from AppBundle:Histories h where h.evTime >:ev_time)")
-                ->setParameter('room', $room->getId())
-                ->setParameter("ev_time", $ev_time);
+        $this->ev_time = $n->sub(new \DateInterval($this->minDelay));
+        $qb = $em->createQueryBuilder();
+        $qb->select('e', 'max(h.evTime)')
+                ->from('AppBundle:Events', 'e')
+                ->leftJoin('AppBundle:Histories', 'h', \Doctrine\ORM\Query\Expr\Join::WITH, 'h.ev=e.id')
+                ->join('e.room', 'r')
+                ->join("e.userid", "u")
+                ->where("e.room = :room")
+                ->groupBy('e.id')
+                ->setParameter('room', $room->getId());
+        $query = $qb->getQuery();
         $ev = $query->getResult();
         $stat = $s[0];
         foreach ($ev as $e) {
-            $this->checkT($e, $stat);
-            $this->checkH($e, $stat);
-            $this->checkCO2($e, $stat);
-            $this->checkVOC($e, $stat);
+            $last = (isset($e[1]) ? new \DateTime($e[1], new \DateTimeZone("Europe/Moscow")) : new \DateTime("2012-07-08"));
+            $this->checkT($e, $stat, $last);
+            $this->checkH($e, $stat, $last);
+            $this->checkCO2($e, $stat, $last);
+            $this->checkVOC($e, $stat, $last);
         }
         return $this->sendEvents();
     }
@@ -68,8 +73,8 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
             $this->params['text'] = $e['body'];
             $this->addHistory($e['event']);
             $ret .= $this->send_post();
-
         }
+        $ret.="##" . $this->status;
         return $ret;
     }
 
@@ -84,25 +89,34 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
         return $output;
     }
 
-    private function checkT($e, $stat) {
-
+    private function checkT($e, $stat, \DateTime $last) {
+        
     }
 
-    private function checkH(\AppBundle\Entity\Events $e, $stat) {
-        if ($e->getHmin() > 0 && $e->getTmax() < $stat['avg_t'] && $e->getHmin() > $stat['avg_h']) {
-            $this->addEvent($e, $stat['avg_h']);
+    private function checkH($e, $stat, \DateTime $last) {
+        if ($e[0]->getHmin() > 0 && $e[0]->getTmax() < $stat['avg_t'] && $e[0]->getHmin() > $stat['avg_h']) {
+            $this->status = 1;
+            if ($this->ev_time > $last) {
+                $this->addEvent($e[0], $stat['avg_h']);
+            }
         }
     }
 
-    private function checkVOC(\AppBundle\Entity\Events $e, $stat) {
-        if ($e->getVocmax() > 0 && $e->getVocmax() < $stat['avg_voc']) {
-            $this->addEvent($e, $stat['avg_voc']);
+    private function checkVOC($e, $stat, \DateTime $last) {
+        if ($e[0]->getVocmax() > 0 && $e[0]->getVocmax() < $stat['avg_voc']) {
+            $this->status = 1;
+            if ($this->ev_time > $last) {
+                $this->addEvent($e[0], $stat['avg_voc']);
+            }
         }
     }
 
-    private function checkCO2(\AppBundle\Entity\Events $e, $stat) {
-        if ($e->getCo2max() > 0 && $e->getCo2max() < $stat['avg_co2']) {
-            $this->addEvent($e, $stat['avg_co2']);
+    private function checkCO2($e, $stat, \DateTime $last) {
+        if ($e[0]->getCo2max() > 0 && $e[0]->getCo2max() < $stat['avg_co2']) {
+            $this->status = 1;
+            if ($this->ev_time > $last) {
+                $this->addEvent($e[0], $stat['avg_co2']);
+            }
         }
     }
 
@@ -118,7 +132,7 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
             'userid' => $e->getUserid(),
             'header' => $e->getDescription(),
             'body' => $e->getDescription() . " " . round($val, 2),
-            'event'=>$e,
+            'event' => $e,
         ];
     }
 

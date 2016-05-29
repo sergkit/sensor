@@ -131,7 +131,7 @@ class SystemController extends Controller {
 
     private function prepareEvents($stat, $room) {
         $em = $this->container->get('doctrine')->getManager();
-        /* @var $ev AppBundle\Entity\EventsRepository */
+        /* @var $ev AppBundle:Events */
         $ev = $em->getRepository('AppBundle:Events');
         $ev->setParams($this->getParameter('pushall_chanel_id'),
                 $this->getParameter('pushall_api_key'),
