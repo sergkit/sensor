@@ -13,6 +13,12 @@ namespace AppBundle\Entity;
 //php app/console cache:clear
 //https://www.skipper18.com/en/download  визуальное проектирование базы
 //http://www.symfony2cheatsheet.com/
+// если ошибка метод должен начинаться на findBy.. то добавить в YML ссылку на репозиторий 
+// AppBundle\Entity\Users:
+//    type: entity
+//    table: users
+//    repositoryClass: AppBundle\Entity\UsersRepository
+
 
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\ExecutionContext;
@@ -85,10 +91,16 @@ class Thtable {
      */
     protected $vocold;
     protected $CheckFields;
+    /**
+     * @ORM\Column(type="decimal", scale=2)
+     */
+    protected $deh;
+    
 
     public function __construct() {
         $this->date = new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
         $this->room = 1;
+        $this->deh = 0;
     }
 
     /**
@@ -196,6 +208,10 @@ class Thtable {
      * @return Thtable
      */
     public function setH($h) {
+        if ($h>100){ // во влажности передаем статус наполнения увлажнителя
+            $h-=100;
+            $this->deh=1;
+        }
         $this->h = $h;
 
         return $this;
@@ -209,7 +225,27 @@ class Thtable {
     public function getH() {
         return $this->h;
     }
+    /**
+     * Set deh
+     *
+     * @param string $deh
+     *
+     * @return Thtable
+     */
+    public function setDeh($deh) {
+        $this->deh = $deh;
 
+        return $this;
+    }
+
+    /**
+     * Get deh
+     *
+     * @return string
+     */
+    public function getDeh() {
+        return $this->deh;
+    }
     /**
      * Set vOC
      *
@@ -289,7 +325,7 @@ class Thtable {
      * @Assert\True(message = "Контрольное поле не корректно")
      */
     public function isSumOk() {
-        return (round($this->getCo2() + $this->getH() + $this->getT() + $this->getVoc()) == round($this->getCheckFields()));
+        return (round($this->getCo2() + $this->getH() + $this->getT() + $this->getVoc() + $this->getDeh()*100) == round($this->getCheckFields()));
     }
 
     public function toArray() {

@@ -45,7 +45,7 @@ class ThtableRepository extends EntityRepository {
  */
     public function getLastStat(\AppBundle\Entity\Rooms $room){
         $qb = $this->createQueryBuilder('th');
-        $qb->select('avg(th.co2) as avg_co2', 'avg(th.t) as avg_t' , 'avg(th.h)  as avg_h', 'avg(th.voc)  as avg_voc')
+        $qb->select('avg(th.co2) as avg_co2', 'avg(th.t) as avg_t' , 'avg(th.h)  as avg_h', 'avg(th.voc)  as avg_voc', 'max(th.deh) as deh')
                 ->where('th.room = :room')
                 ->andWhere('th.date>:dd')
                 ->groupBy('th.room')

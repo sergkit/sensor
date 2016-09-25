@@ -53,6 +53,13 @@ AppBundle\Entity\Thtable:
             nullable: false
             precision: 10
             scale: 2
+        deh:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            options:
+                default: '0.00'
     manyToOne:
         room:
             targetEntity: Rooms

@@ -23,7 +23,10 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
     ];
     private $ev_time;
     private $minDelay = "PT30M";  // задержка до повторной отправки сообщения
-    private $status = 0; // статус для зажигания светодиода на блоке 0нормально, 1 - красный
+    private $status = 0; // статус для зажигания светодиода на блоке 0нормально, 2 - включен, 8 - включить увлажнилку
+    private $statusLed = 2; // бит для включения светодиода
+    private $statusDeh = 8; // бит для включения увлажнителя
+    private $statusVoc = 4; // бит для включения увлажнителя
 
     public function setParams($id, $api_key, $url, $min_delay) {
         $this->params['id'] = $id;
@@ -89,13 +92,31 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
         return $output;
     }
 
+    /**
+     * функция для установки битов статусов
+     * @param byte $status
+     */
+    private function setStatus($status) {
+        if (($status & $this->status)!==0){
+            $this->status+=$status;
+        }
+    }
+
     private function checkT($e, $stat, \DateTime $last) {
         
     }
 
     private function checkH($e, $stat, \DateTime $last) {
+        //обработка уровня воды в увлажнилке
+        if ($stat['deh'] > 0) {
+             if ($this->ev_time > $last) {
+               $this->addEvent($e[0]->setDescription("Нет воды в увлажнилке "), $stat['avg_h']);
+            }
+        }
+
         if ($e[0]->getHmin() > 0 && $e[0]->getTmax() < $stat['avg_t'] && $e[0]->getHmin() > $stat['avg_h']) {
-            $this->status = 1;
+            $this->setStatus($this->statusLed);
+            $this->setStatus($this->statusDeh);
             if ($this->ev_time > $last) {
                 $this->addEvent($e[0], $stat['avg_h']);
             }
@@ -104,7 +125,8 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
 
     private function checkVOC($e, $stat, \DateTime $last) {
         if ($e[0]->getVocmax() > 0 && $e[0]->getVocmax() < $stat['avg_voc']) {
-            $this->status = 1;
+            $this->setStatus($this->statusLed);
+            $this->setStatus($this->statusVoc);
             if ($this->ev_time > $last) {
                 $this->addEvent($e[0], $stat['avg_voc']);
             }
@@ -113,7 +135,7 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
 
     private function checkCO2($e, $stat, \DateTime $last) {
         if ($e[0]->getCo2max() > 0 && $e[0]->getCo2max() < $stat['avg_co2']) {
-            $this->status = 1;
+            $this->setStatus($this->statusLed);
             if ($this->ev_time > $last) {
                 $this->addEvent($e[0], $stat['avg_co2']);
             }

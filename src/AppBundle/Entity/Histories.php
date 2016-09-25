@@ -85,4 +85,3 @@ class Histories
         $this->evTime = new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
     }
 }
-
