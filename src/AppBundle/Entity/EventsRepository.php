@@ -27,6 +27,8 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
     private $statusLed = 2; // бит для включения светодиода
     private $statusDeh = 8; // бит для включения увлажнителя
     private $statusVoc = 4; // бит для включения увлажнителя
+    private $maxSendTime=22; 
+    private $minSendTime=8;
 
     public function setParams($id, $api_key, $url, $min_delay) {
         $this->params['id'] = $id;
@@ -70,14 +72,22 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
 
     private function sendEvents() {
         $ret = '';
+        $isSendPost = false;
+        $curTime = new \DateTime("now", new \DateTimeZone("Europe/Moscow"));
+        $curHour = $curTime->format("G");
+        if ($curHour > $this->minSendTime && $curHour < $this->maxSendTime) {
+            $isSendPost = true;
+        }
         foreach ($this->eventsList as $e) {
             $this->params['uid'] = $e['userid']->getUid();
             $this->params['title'] = $e['header'];
             $this->params['text'] = $e['body'];
             $this->addHistory($e['event']);
-            $ret .= $this->send_post();
+            if ($isSendPost) {
+                $ret .= $this->send_post();
+            }
         }
-        $ret.="##" . $this->status;
+        $ret.="##" . chr(48 + $this->status);
         return $ret;
     }
 
@@ -97,7 +107,7 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
      * @param byte $status
      */
     private function setStatus($status) {
-        if (($status & $this->status)!==0){
+        if (($status & $this->status) == 0) {
             $this->status+=$status;
         }
     }
@@ -109,8 +119,8 @@ class EventsRepository extends \Doctrine\ORM\EntityRepository {
     private function checkH($e, $stat, \DateTime $last) {
         //обработка уровня воды в увлажнилке
         if ($stat['deh'] > 0) {
-             if ($this->ev_time > $last) {
-               $this->addEvent($e[0]->setDescription("Нет воды в увлажнилке "), $stat['avg_h']);
+            if ($this->ev_time > $last) {
+                $this->addEvent($e[0]->setDescription("Нет воды в увлажнилке "), $stat['avg_h']);
             }
         }
 
